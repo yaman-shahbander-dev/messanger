@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\OperationResult;
+use App\Http\Requests\StoreMessageRequest;
 use App\Services\Messenger\MessengerService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -36,6 +37,22 @@ class MessengerController extends Controller
             return response()->failed($user->getMessage());
         }
 
-        return response()->ok($user);
+        return response()->ok(data: $user);
+    }
+
+    public function sendMessage(StoreMessageRequest $request)
+    {
+        $message = $this->messengerService->storeMessage($request);
+
+        if ($message instanceof OperationResult) {
+            return response()->failed($message->getMessage());
+        }
+
+        $view = $this->messengerService->renderMessageCard($message);
+
+        return response()->ok(data: [
+            'message' => $view,
+            'tempID' => $request->temporaryMsgId
+        ]);
     }
 }
