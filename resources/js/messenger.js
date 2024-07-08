@@ -88,6 +88,48 @@ function debounce(callback, delay) {
     }
 }
 
+function enableChatBoxLoader() {
+    $('.wsus__message_paceholder').removeClass('d-none');
+}
+
+function disableChatBoxLoader() {
+    $('.wsus__message_paceholder').addClass('d-none');
+}
+
+/**
+ * -----------------------------------
+ * Fetch id data of the user and update the view
+ * -----------------------------------
+ */
+function IdInfo(id) {
+    $.ajax({
+        method: 'GET',
+        url: '/messenger/user-info',
+        data: {
+            id: id
+        },
+        beforeSend: function () {
+            NProgress.start();
+            enableChatBoxLoader();
+        },
+        success: function (data) {
+            $('.messenger-header').find('img').attr('src', data.data.avatar);
+            $('.messenger-header').find('h4').text(data.data.name);
+
+            $('.messenger-info-view .user_photo').find('img').attr('src', data.data.avatar);
+            $('.messenger-info-view').find('.user_name').text(data.data.name);
+            $('.messenger-info-view').find('.user_unique_name').text(data.data.user_name);
+
+            NProgress.done();
+            disableChatBoxLoader();
+        },
+        error: function () {
+            disableChatBoxLoader();
+        }
+    });
+}
+
+
 /**
  * -----------------------------------
  * On DOM Load
@@ -114,5 +156,10 @@ $(document).ready(function () {
     actionOnScroll(".user_search_list_result", function () {
         let value = $('.user_search').val();
         searchUsers(value);
+    });
+
+    $("body").on('click', '.messenger-list-item', function () {
+        const dataId = $(this).attr('data-id');
+        IdInfo(dataId);
     });
 });
