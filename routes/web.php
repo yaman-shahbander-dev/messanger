@@ -29,4 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/messenger/user-info', [MessengerController::class, 'fetchUserInfo'])->name('messenger.user-info');
     Route::post('/messenger/send-message', [MessengerController::class, 'sendMessage'])->name('messenger.send-message');
     Route::get('/messenger/fetch-messages', [MessengerController::class, 'fetchMessages'])->name('messenger.fetch-messages');
+    Route::get('/messenger/fetch-contacts', [MessengerController::class, 'fetchContacts'])->name('messenger.fetch-contacts');
+    Route::get('/messenger/update-contact-item', [MessengerController::class, 'updateContactItem'])->name('messenger.update-contact-item');
+    Route::put('/messenger/make-seen', [MessengerController::class, 'makeSeen'])->name('messenger.make-seen');
 });

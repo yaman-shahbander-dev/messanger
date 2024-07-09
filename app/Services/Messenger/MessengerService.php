@@ -2,8 +2,12 @@
 
 namespace App\Services\Messenger;
 
+use App\Actions\MessengerActions\FetchContactsAction;
 use App\Actions\MessengerActions\FetchMessagesAction;
 use App\Actions\MessengerActions\FetchUserInfoByIdAction;
+use App\Actions\MessengerActions\GetContactItemAction;
+use App\Actions\MessengerActions\GetUserByIdAction;
+use App\Actions\MessengerActions\MakeMessagesSeenAction;
 use App\Actions\MessengerActions\RenderMessageCardAction;
 use App\Actions\MessengerActions\RenderSearchUsersListAction;
 use App\Actions\MessengerActions\SearchUsersAction;
@@ -41,5 +45,25 @@ class MessengerService
     public function fetchMessages(array $data)
     {
         return app(FetchMessagesAction::class)($data);
+    }
+
+    public function fetchContacts()
+    {
+        return app(FetchContactsAction::class)();
+    }
+
+    public function getUserById(array $data)
+    {
+        return app(GetUserByIdAction::class)($data['userId']);
+    }
+
+    public function getContactItem($user)
+    {
+        return app(GetContactItemAction::class)($user);
+    }
+
+    public function makeSeen(array $data)
+    {
+        return app(MakeMessagesSeenAction::class)($data);
     }
 }

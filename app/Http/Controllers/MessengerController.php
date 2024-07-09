@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\MessengerActions\GetUserByIdAction;
 use App\Helpers\OperationResult;
+use App\Http\Requests\Auth\UpdateContactItemRequest;
 use App\Http\Requests\FetchConversationMessagesRequest;
+use App\Http\Requests\GetContactsRequest;
+use App\Http\Requests\MakeMessagesSeenRequest;
 use App\Http\Requests\StoreMessageRequest;
 use App\Services\Messenger\MessengerService;
 use Illuminate\Http\Request;
@@ -76,5 +80,47 @@ class MessengerController extends Controller
             'last_page' => $messages->lastPage(),
             'messages' => $allMessages
         ]);
+    }
+
+    public function fetchContacts(GetContactsRequest $request)
+    {
+        $contacts = $this->messengerService->fetchContacts();
+
+        if ($contacts instanceof OperationResult) {
+            return response()->ok(data: [
+                'contacts' => $contacts->getMessage()
+            ]);
+        }
+
+        return response()->ok(data: [
+            'contacts' => $contacts['contacts'],
+            'last_page' => $contacts['last_page']
+        ]);
+    }
+
+    public function updateContactItem(UpdateContactItemRequest $request)
+    {
+        $user = $this->messengerService->getUserById($request->validated());
+
+        if ($user instanceof OperationResult) {
+            return response()->failed($user->getMessage());
+        }
+
+        $contactItem = $this->messengerService->getContactItem($user);
+
+        return response()->ok(data: [
+            'contact_item' => $contactItem
+        ]);
+    }
+
+    public function makeSeen(MakeMessagesSeenRequest $request)
+    {
+        $result = $this->messengerService->makeSeen($request->validated());
+
+        if ($result instanceof OperationResult) {
+            return response()->failed($result->getMessage());
+        }
+
+        return response()->ok(data: true);
     }
 }
