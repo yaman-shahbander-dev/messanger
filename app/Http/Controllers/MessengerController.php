@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\OperationResult;
+use App\Http\Requests\FetchConversationMessagesRequest;
 use App\Http\Requests\StoreMessageRequest;
 use App\Services\Messenger\MessengerService;
 use Illuminate\Http\Request;
@@ -53,6 +54,27 @@ class MessengerController extends Controller
         return response()->ok(data: [
             'message' => $view,
             'tempID' => $request->temporaryMsgId
+        ]);
+    }
+
+    public function fetchMessages(FetchConversationMessagesRequest $request)
+    {
+        $messages = $this->messengerService->fetchMessages($request->validated());
+
+        if ($messages instanceof OperationResult) {
+            return response()->ok(data: [
+                'messages' => $messages->getMessage()
+            ]);
+        }
+
+        $allMessages = null;
+        foreach ($messages->reverse() as $message) {
+            $allMessages .= $this->messengerService->renderMessageCard($message);
+        }
+
+        return response()->ok(data: [
+            'last_page' => $messages->lastPage(),
+            'messages' => $allMessages
         ]);
     }
 }

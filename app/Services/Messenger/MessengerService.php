@@ -2,6 +2,7 @@
 
 namespace App\Services\Messenger;
 
+use App\Actions\MessengerActions\FetchMessagesAction;
 use App\Actions\MessengerActions\FetchUserInfoByIdAction;
 use App\Actions\MessengerActions\RenderMessageCardAction;
 use App\Actions\MessengerActions\RenderSearchUsersListAction;
@@ -35,5 +36,10 @@ class MessengerService
     public function renderMessageCard($message)
     {
         return app(RenderMessageCardAction::class)($message);
+    }
+
+    public function fetchMessages(array $data)
+    {
+        return app(FetchMessagesAction::class)($data);
     }
 }

@@ -106,7 +106,10 @@ function enableChatBoxLoader() {
 }
 
 function disableChatBoxLoader() {
+    $('.wsus__chat_app').removeClass('show_info');
     $('.wsus__message_paceholder').addClass('d-none');
+    $('.wsus__message_paceholder.black').addClass('d-none');
+    $('.wsus__message_paceholder.black').removeClass('black');
 }
 
 function sendMessage() {
@@ -135,7 +138,7 @@ function sendMessage() {
                 } else {
                     messageBoxContainer.append(sendTemplateMessageCard(inputValue, tempId));
                 }
-
+                scrollToBottom(messageBoxContainer);
                 messageFormReset();
             },
             success: function (data) {
@@ -188,6 +191,69 @@ function messageFormReset() {
     messageForm.trigger("reset");
 }
 
+let messagePage = 1;
+let noMoreMessages = false;
+let messagesLoading = false;
+function fetchMessages(id, newFetch = false) {
+
+    if (newFetch) {
+        messagePage = 1;
+        noMoreMessages = false;
+    }
+
+    if (!noMoreMessages && !messagesLoading) {
+        $.ajax({
+            method: 'GET',
+            url: '/messenger/fetch-messages',
+            data: {
+                _token: csrf_token,
+                id: id,
+                page: messagePage,
+
+            },
+            beforeSend: function () {
+                messagesLoading = true;
+                let loader =
+                    '<div class="text-center messages-loader">' +
+                    '<div class="spinner-border text-primary" role="status">' +
+                    '<span class="visually-hidden">Loading...</span>' +
+                    '</div>' +
+                    '</div>';
+
+                messageBoxContainer.prepend(loader);
+            },
+            success: function (data) {
+                messagesLoading = false;
+                messageBoxContainer.find(".messages-loader").remove();
+
+                if (messagePage === 1) {
+                    messageBoxContainer.html(data.data.messages);
+                    scrollToBottom(messageBoxContainer);
+                } else {
+                    const lastMsg = $(messageBoxContainer).find(".message-card").first();
+                    const currOffset = lastMsg.offset().top - messageBoxContainer.scrollTop();
+
+                    messageBoxContainer.prepend(data.data.messages);
+                    messageBoxContainer.scrollTop(lastMsg.offset().top - currOffset);
+                }
+
+                noMoreMessages = messagePage >= data.data.last_page;
+                if (!noMoreMessages) messagePage++;
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+    }
+}
+
+function scrollToBottom(container) {
+    $(container).stop().animate({
+        scrollTop: $(container)[0].scrollHeight
+    });
+}
+
+
 /**
  * -----------------------------------
  * Fetch id data of the user and update the view
@@ -205,6 +271,8 @@ function IdInfo(id) {
             enableChatBoxLoader();
         },
         success: function (data) {
+            fetchMessages(data.data.id, true);
+
             $('.messenger-header').find('img').attr('src', data.data.avatar);
             $('.messenger-header').find('h4').text(data.data.name);
 
@@ -269,4 +337,8 @@ $(document).ready(function () {
     $('.cancel-attachment').on('click', function () {
         messageFormReset();
     });
+
+    actionOnScroll(".wsus__chat_area_body", function () {
+        fetchMessages(getMessengerId())
+    }, true);
 });
