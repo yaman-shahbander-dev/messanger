@@ -1193,6 +1193,14 @@ button {
     width: 150px !important;
 }
 
+.favourite.active {
+    background: var(--colorPrimary) !important;
+}
+
+.favourite.active i {
+    color: var(--colorWhite) !important;
+}
+
 /*================================
     Chatting Application End
 ================================*/

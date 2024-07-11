@@ -345,6 +345,43 @@ function makeSeen() {
 }
 
 
+function star() {
+    $(".favourite").toggleClass('active');
+
+    $.ajax({
+        method: 'POST',
+        url: '/messenger/favorite',
+        data: {
+            _token: csrf_token,
+            id: getMessengerId()
+        },
+        success: function (data) {
+            if (data.data.status == 'added') {
+                notyf.success("Added to the favorite list!");
+            } else {
+                notyf.success("Removed from the favorite list!");
+            }
+        },
+        error: function (xhr, status, error) {
+
+        }
+    })
+}
+
+function fetchFavoriteList() {
+    $.ajax({
+        method: 'GET',
+        url: '/messenger/fetch-favorite',
+        data: {},
+        success: function (data) {
+            $(".favourite_user_slider").html(data.data.favorite_list);
+        },
+        error: function (xhr, status, error) {
+
+        }
+    })
+}
+
 /**
  * -----------------------------------
  * Fetch id data of the user and update the view
@@ -363,6 +400,8 @@ function IdInfo(id) {
         },
         success: function (data) {
             fetchMessages(data.data.id, true);
+
+            data.data.favorite ? $(".favourite").addClass('active') : $(".favourite").removeClass('active');
 
             $('.messenger-header').find('img').attr('src', data.data.avatar);
             $('.messenger-header').find('h4').text(data.data.name);
@@ -396,6 +435,7 @@ $(document).ready(function () {
     }
 
     getContacts();
+    // fetchFavoriteList();
 
     $('#select_file').change(function () {
         imagePreview(this, '.profile-image-preview');
@@ -446,4 +486,9 @@ $(document).ready(function () {
     actionOnScroll(".messenger-contacts", function () {
         getContacts();
     });
+
+    $(".favourite").on("click", function (e) {
+        e.preventDefault();
+        star();
+    })
 });

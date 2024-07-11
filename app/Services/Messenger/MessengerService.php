@@ -2,11 +2,14 @@
 
 namespace App\Services\Messenger;
 
+use App\Actions\MessengerActions\AddOrRemoveFavoriteAction;
 use App\Actions\MessengerActions\FetchContactsAction;
 use App\Actions\MessengerActions\FetchMessagesAction;
 use App\Actions\MessengerActions\FetchUserInfoByIdAction;
 use App\Actions\MessengerActions\GetContactItemAction;
+use App\Actions\MessengerActions\GetFavoriteListAction;
 use App\Actions\MessengerActions\GetUserByIdAction;
+use App\Actions\MessengerActions\GetUserFavoriteUsersAction;
 use App\Actions\MessengerActions\MakeMessagesSeenAction;
 use App\Actions\MessengerActions\RenderMessageCardAction;
 use App\Actions\MessengerActions\RenderSearchUsersListAction;
@@ -65,5 +68,20 @@ class MessengerService
     public function makeSeen(array $data)
     {
         return app(MakeMessagesSeenAction::class)($data);
+    }
+
+    public function favorite(array $data)
+    {
+        return app(AddOrRemoveFavoriteAction::class)($data);
+    }
+
+    public function fetchFavorite()
+    {
+        return app(GetFavoriteListAction::class)();
+    }
+
+    public function getUserFavoriteUsers()
+    {
+        return app(GetUserFavoriteUsersAction::class)();
     }
 }

@@ -18,15 +18,17 @@
     <div class="wsus__favourite_user">
         <div class="top">favourites</div>
         <div class="row favourite_user_slider">
-            <div class="col-xl-3">
-                <a href="#" class="wsus__favourite_item">
-                    <div class="img">
-                        <img src="images/author_img_1.jpg" alt="User" class="img-fluid">
-                        <span class="inactive"></span>
-                    </div>
-                    <p>mr hasin</p>
-                </a>
-            </div>
+            @foreach($favorite_list as $favorite)
+                <div class="col-xl-3 messenger-list-item" data-id="{{ $favorite->user?->id }}">
+                    <a href="#" class="wsus__favourite_item">
+                        <div class="img">
+                            <img src="{{ asset($favorite->user?->avatar) }}" alt="User" class="img-fluid">
+                            <span class="inactive"></span>
+                        </div>
+                        <p>{{ $favorite->user?->name }}</p>
+                    </a>
+                </div>
+            @endforeach
         </div>
     </div>
 

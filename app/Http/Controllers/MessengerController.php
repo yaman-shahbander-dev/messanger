@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Actions\MessengerActions\GetUserByIdAction;
+use App\Enums\OperationResultEnum;
 use App\Helpers\OperationResult;
 use App\Http\Requests\Auth\UpdateContactItemRequest;
+use App\Http\Requests\FavoriteUserRequest;
 use App\Http\Requests\FetchConversationMessagesRequest;
 use App\Http\Requests\GetContactsRequest;
 use App\Http\Requests\MakeMessagesSeenRequest;
@@ -18,7 +20,8 @@ class MessengerController extends Controller
     public function __construct(protected MessengerService $messengerService) {}
     public function index(): View
     {
-        return view('messenger.index');
+        $favorites = $this->messengerService->getUserFavoriteUsers();
+        return view('messenger.index', ['favorite_list' => $favorites]);
     }
 
     public function search(Request $request)
@@ -122,5 +125,31 @@ class MessengerController extends Controller
         }
 
         return response()->ok(data: true);
+    }
+
+    public function favorite(FavoriteUserRequest $request)
+    {
+        $result = $this->messengerService->favorite($request->validated());
+
+        if ($result instanceof OperationResult && $result->getStatus() === OperationResultEnum::FAILURE->value) {
+            return response()->failed($result->getMessage());
+        }
+
+        return response()->ok(data: [
+            'status' => $result->getMessage()
+        ]);
+    }
+
+    public function fetchFavorite()
+    {
+        $favorites = $this->messengerService->fetchFavorite();
+
+        if ($favorites instanceof OperationResult) {
+            return response()->failed($favorites->getMessage());
+        }
+
+        return response()->ok(data: [
+            'favorite_list' => $favorites
+        ]);
     }
 }

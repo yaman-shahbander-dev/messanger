@@ -32,4 +32,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/messenger/fetch-contacts', [MessengerController::class, 'fetchContacts'])->name('messenger.fetch-contacts');
     Route::get('/messenger/update-contact-item', [MessengerController::class, 'updateContactItem'])->name('messenger.update-contact-item');
     Route::put('/messenger/make-seen', [MessengerController::class, 'makeSeen'])->name('messenger.make-seen');
+    Route::post('/messenger/favorite', [MessengerController::class, 'favorite'])->name('messenger.favorite');
+    Route::get('/messenger/fetch-favorite', [MessengerController::class, 'fetchFavorite'])->name('messenger.fetch-favorite');
 });
