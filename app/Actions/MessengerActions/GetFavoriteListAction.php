@@ -4,9 +4,7 @@ namespace App\Actions\MessengerActions;
 
 use App\Enums\OperationResultEnum;
 use App\Helpers\OperationResult;
-use App\Models\Favorite;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Auth;
 
 class GetFavoriteListAction
 {

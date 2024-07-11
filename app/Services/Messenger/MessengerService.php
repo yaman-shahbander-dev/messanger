@@ -3,6 +3,7 @@
 namespace App\Services\Messenger;
 
 use App\Actions\MessengerActions\AddOrRemoveFavoriteAction;
+use App\Actions\MessengerActions\DeleteMessageAction;
 use App\Actions\MessengerActions\FetchContactsAction;
 use App\Actions\MessengerActions\FetchMessagesAction;
 use App\Actions\MessengerActions\FetchUserInfoByIdAction;
@@ -83,5 +84,10 @@ class MessengerService
     public function getUserFavoriteUsers()
     {
         return app(GetUserFavoriteUsersAction::class)();
+    }
+
+    public function deleteMessage(array $data)
+    {
+        return app(DeleteMessageAction::class)($data);
     }
 }

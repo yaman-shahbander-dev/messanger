@@ -171,7 +171,6 @@ function sendTemplateMessageCard(message, tempId, attachment = false) {
                     ${message.length > 0 ? `<p class="messages">${message}</p>` : ''}
 
                     <span class="clock"><i class="fas fa-clock"></i> now</span>
-                    <a class="action" href="#"><i class="fas fa-trash"></i></a>
                 </div>
             </div>
         `;
@@ -181,8 +180,6 @@ function sendTemplateMessageCard(message, tempId, attachment = false) {
                 <div class="wsus__single_chat chat_right">
                     <p class="messages">${message}</p>
                     <span class="clock"><i class="fas fa-clock"></i> now</span>
-
-                    <a class="action" href="#"><i class="fas fa-trash"></i></a>
                 </div>
             </div>
         `;
@@ -428,6 +425,43 @@ function IdInfo(id) {
     });
 }
 
+function deleteMessage(message_id) {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                method: 'DELETE',
+                url : '/messenger/delete-message',
+                data: {
+                    _token: csrf_token,
+                    messageId: message_id
+                },
+                beforeSend: function () {
+                    $(`.message-card[data-id="${message_id}"]`).remove();
+                },
+                success: function (data) {
+                    updateContactItem(getMessengerId());
+                },
+                error: function (xhr, status, error) {
+
+                }
+            });
+            Swal.fire({
+                title: "Deleted!",
+                text: "Your file has been deleted.",
+                icon: "success"
+            });
+        }
+    });
+}
+
 
 /**
  * -----------------------------------
@@ -499,5 +533,11 @@ $(document).ready(function () {
     $(".favourite").on("click", function (e) {
         e.preventDefault();
         star();
+    })
+
+    $("body").on("click", ".delete-message", function (e) {
+        e.preventDefault();
+        let id = $(this).data('id');
+        deleteMessage(id);
     })
 });

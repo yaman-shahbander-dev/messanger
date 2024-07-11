@@ -6,6 +6,7 @@ use App\Actions\MessengerActions\GetUserByIdAction;
 use App\Enums\OperationResultEnum;
 use App\Helpers\OperationResult;
 use App\Http\Requests\Auth\UpdateContactItemRequest;
+use App\Http\Requests\DeleteMessageRequest;
 use App\Http\Requests\FavoriteUserRequest;
 use App\Http\Requests\FetchConversationMessagesRequest;
 use App\Http\Requests\GetContactsRequest;
@@ -151,5 +152,16 @@ class MessengerController extends Controller
         return response()->ok(data: [
             'favorite_list' => $favorites
         ]);
+    }
+
+    public function deleteMessage(DeleteMessageRequest $request)
+    {
+        $result = $this->messengerService->deleteMessage($request->validated());
+
+        if ($result instanceof OperationResult) {
+            return response()->failed($result->getMessage());
+        }
+
+        return response()->ok();
     }
 }

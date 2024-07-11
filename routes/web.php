@@ -24,14 +24,19 @@ require __DIR__.'/auth.php';
 Route::middleware('auth')->group(function () {
     Route::post('/profile', [UserProfileController::class, 'update'])->name('profile.update');
 
-    Route::get('/messenger', [MessengerController::class, 'index'])->name('home');
-    Route::get('/messenger/search', [MessengerController::class, 'search'])->name('messenger.search');
-    Route::get('/messenger/user-info', [MessengerController::class, 'fetchUserInfo'])->name('messenger.user-info');
-    Route::post('/messenger/send-message', [MessengerController::class, 'sendMessage'])->name('messenger.send-message');
-    Route::get('/messenger/fetch-messages', [MessengerController::class, 'fetchMessages'])->name('messenger.fetch-messages');
-    Route::get('/messenger/fetch-contacts', [MessengerController::class, 'fetchContacts'])->name('messenger.fetch-contacts');
-    Route::get('/messenger/update-contact-item', [MessengerController::class, 'updateContactItem'])->name('messenger.update-contact-item');
-    Route::put('/messenger/make-seen', [MessengerController::class, 'makeSeen'])->name('messenger.make-seen');
-    Route::post('/messenger/favorite', [MessengerController::class, 'favorite'])->name('messenger.favorite');
-    Route::get('/messenger/fetch-favorite', [MessengerController::class, 'fetchFavorite'])->name('messenger.fetch-favorite');
+    Route::prefix('/messenger')
+        ->controller(MessengerController::class)
+        ->group(function () {
+            Route::get('', 'index')->name('home');
+            Route::get('/search', 'search')->name('messenger.search');
+            Route::get('/user-info', 'fetchUserInfo')->name('messenger.user-info');
+            Route::post('/send-message', 'sendMessage')->name('messenger.send-message');
+            Route::get('/fetch-messages', 'fetchMessages')->name('messenger.fetch-messages');
+            Route::get('/fetch-contacts', 'fetchContacts')->name('messenger.fetch-contacts');
+            Route::get('/update-contact-item', 'updateContactItem')->name('messenger.update-contact-item');
+            Route::put('/make-seen', 'makeSeen')->name('messenger.make-seen');
+            Route::post('/favorite', 'favorite')->name('messenger.favorite');
+            Route::get('/fetch-favorite', 'fetchFavorite')->name('messenger.fetch-favorite');
+            Route::delete('/delete-message', 'deleteMessage')->name('messenger.delete-message');
+        });
 });
