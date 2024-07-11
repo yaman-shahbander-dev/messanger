@@ -1,9 +1,11 @@
 <?php
 
+use App\Events\Message as MessageEvent;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MessengerController;
 use App\Http\Controllers\UserProfileController;
+use Pusher\Pusher;
 
 Route::get('/', function () {
     return view('welcome');

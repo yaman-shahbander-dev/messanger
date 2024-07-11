@@ -4,6 +4,7 @@ namespace App\Actions\MessengerActions;
 
 use App\Http\Requests\StoreMessageRequest;
 use App\Models\Message;
+use App\Events\Message AS MessageEvent;
 use App\Traits\FileUpload;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\OperationResult;
@@ -26,6 +27,8 @@ class StoreMessageAction
             ]);
 
         if (!$message) return new OperationResult(OperationResultEnum::FAILURE->value, 'Failed to store the message!');
+
+        MessageEvent::dispatch($message->body, $message->to_id, Auth::user()->id);
 
         return $message;
     }

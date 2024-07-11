@@ -134,7 +134,6 @@ function sendMessage() {
             processData: false,
             contentType: false,
             beforeSend: function () {
-                console.log(hasAttachment);
                 if (hasAttachment) {
                     messageBoxContainer.append(sendTemplateMessageCard(inputValue, tempId, true));
                 } else {
@@ -298,7 +297,7 @@ function scrollToBottom(container) {
 }
 
 function updateContactItem(userId) {
-    if (user_id != authId) {
+    // if (user_id != authId) {
         $.ajax({
             method: 'GET',
             url: '/messenger/update-contact-item',
@@ -314,7 +313,7 @@ function updateContactItem(userId) {
 
             }
         });
-    }
+    // }
 }
 
 function updateSelectedContent(userId) {
@@ -462,6 +461,11 @@ function deleteMessage(message_id) {
     });
 }
 
+
+window.Echo.private('message.' + authId)
+    .listen("Message", (e) => {
+        console.log(e);
+    });
 
 /**
  * -----------------------------------

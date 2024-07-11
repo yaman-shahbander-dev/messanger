@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}">
 
-    @vite(['resources/js/app.js', 'resources/js/messenger.js'])
+    @vite(['resources/js/app.js', 'resources/js/messenger.js', 'resources/js/echo.js'])
 </head>
 <body>
     <!--==================================
