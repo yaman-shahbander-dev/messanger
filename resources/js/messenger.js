@@ -403,6 +403,15 @@ function IdInfo(id) {
 
             data.data.favorite ? $(".favourite").addClass('active') : $(".favourite").removeClass('active');
 
+            $(".wsus__chat_info_gallery").html("");
+
+            if (data.data.shared_photos) {
+                $(".nothing_share").addClass("d-none");
+                $(".wsus__chat_info_gallery").html(data.data.shared_photos);
+            } else {
+                $(".nothing_share").removeClass("d-none");
+            }
+
             $('.messenger-header').find('img').attr('src', data.data.avatar);
             $('.messenger-header').find('h4').text(data.data.name);
 
