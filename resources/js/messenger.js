@@ -11,6 +11,7 @@ const csrf_token = $("meta[name=csrf_token]").attr("content");
 const messageBoxContainer = $(".wsus__chat_area_body");
 const messengerContactBox = $(".messenger-contacts");
 const authId = $("meta[name=auth_id]").attr("content");
+const url = $("meta[name=url]").attr("content");
 const getMessengerId = () => $("meta[name=id]").attr("content");
 const setMessengerId = (id) => $("meta[name=id]").attr("content", id);
 /**
@@ -179,6 +180,30 @@ function sendTemplateMessageCard(message, tempId, attachment = false) {
                 <div class="wsus__single_chat chat_right">
                     <p class="messages">${message}</p>
                     <span class="clock"><i class="fas fa-clock"></i> now</span>
+                </div>
+            </div>
+        `;
+    }
+}
+
+function receiveMessageCard(e) {
+    if (e.attachment) {
+        return `
+            <div class="wsus__single_chat_area message-card" data-id="${e.id}">
+                <div class="wsus__single_chat">
+                    <a class="venobox" data-gall="gallery01" href="${url + e.attachment}">
+                        <img src="${url + e.attachment}" alt="" class="img-fluid w-100">
+                    </a>
+
+                    ${e.body.length > 0 ? `<p class="messages">${e.body}</p>` : ''}
+                </div>
+            </div>
+        `;
+    } else {
+        return `
+            <div class="wsus__single_chat_area message-card" data-id="${e.id}">
+                <div class="wsus__single_chat">
+                    <p class="messages">${e.body}</p>
                 </div>
             </div>
         `;
@@ -461,10 +486,19 @@ function deleteMessage(message_id) {
     });
 }
 
+function playNotificationSound() {
+    const sound = new Audio(`/default/message-sound.mp3`);
+    sound.play();
+}
+
 
 window.Echo.private('message.' + authId)
     .listen("Message", (e) => {
         console.log(e);
+        updateContactItem(e.message.from_id);
+        playNotificationSound();
+        let message = receiveMessageCard(e.message)
+        messageBoxContainer.append(message);
     });
 
 /**
@@ -544,4 +578,4 @@ $(document).ready(function () {
         let id = $(this).data('id');
         deleteMessage(id);
     })
-});
+})

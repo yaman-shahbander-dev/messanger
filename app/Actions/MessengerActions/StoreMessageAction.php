@@ -28,7 +28,7 @@ class StoreMessageAction
 
         if (!$message) return new OperationResult(OperationResultEnum::FAILURE->value, 'Failed to store the message!');
 
-        MessageEvent::dispatch($message->body, $message->to_id, Auth::user()->id);
+        MessageEvent::dispatch($message);
 
         return $message;
     }
