@@ -20,7 +20,7 @@ class FetchMessagesAction
             ->paginate(20);
 
         if (count($messages) < 1) return new OperationResult(OperationResultEnum::SUCCESS->value, "
-            <div class='d-flex justify-content-center align-items-center h-100'>
+            <div class='d-flex justify-content-center align-items-center h-100 no_messages'>
                 <p>Say hi and start messaging!</p>
             </div>
         ");

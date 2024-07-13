@@ -141,10 +141,13 @@ function sendMessage() {
                 } else {
                     messageBoxContainer.append(sendTemplateMessageCard(inputValue, tempId));
                 }
+
+                $(".no_messages").addClass('d-none');
                 scrollToBottom(messageBoxContainer);
                 messageFormReset();
             },
             success: function (data) {
+                makeSeen();
                 updateContactItem(getMessengerId());
 
                 const tempMessageCardElement = messageBoxContainer.find(`.message-card[data-id=${data.data.tempID}]`);
@@ -196,7 +199,7 @@ function receiveMessageCard(e) {
                         <img src="${url + e.attachment}" alt="" class="img-fluid w-100">
                     </a>
 
-                    ${e.body.length > 0 ? `<p class="messages">${e.body}</p>` : ''}
+                    ${e.body != null && e.body.length > 0 ? `<p class="messages">${e.body}</p>` : ''}
                 </div>
             </div>
         `;
@@ -213,8 +216,9 @@ function receiveMessageCard(e) {
 
 function messageFormReset() {
     $('.attachment-block').addClass('d-none');
-    $(".emojionearea-editor").text("");
-    messageForm.trigger("reset");
+    messageForm.trigger('reset');
+    var emojiElt = $('#example1').emojioneArea();
+    emojiElt.data("emojioneArea").setText('');
 }
 
 let messagePage = 1;
@@ -606,6 +610,7 @@ $(document).ready(function () {
         updateSelectedContent(dataId);
         setMessengerId(dataId);
         IdInfo(dataId);
+        messageFormReset();
     });
 
     $(".message-form").on("submit", function (e) {

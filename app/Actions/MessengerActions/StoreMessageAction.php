@@ -28,7 +28,9 @@ class StoreMessageAction
 
         if (!$message) return new OperationResult(OperationResultEnum::FAILURE->value, 'Failed to store the message!');
 
-        MessageEvent::dispatch($message);
+        $pusherMessage = $message;
+        $pusherMessage->attachment = json_decode($pusherMessage->attachment);
+        MessageEvent::dispatch($pusherMessage);
 
         return $message;
     }
