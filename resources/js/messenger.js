@@ -5,6 +5,7 @@
  */
 
 var temporaryMsgId = 0;
+var activeUsersIds = [];
 const messageForm = $(".message-form");
 const messageInput = $(".message-input");
 const csrf_token = $("meta[name=csrf_token]").attr("content");
@@ -306,6 +307,8 @@ function getContacts() {
 
                 noMoreContacts = contactsPage >= data.data.last_page;
                 if (!noMoreContacts) contactsPage++;
+
+                updateUserActiveList();
             },
             error: function (xhr, status, error) {
                 contactLoading = false;
@@ -332,6 +335,11 @@ function updateContactItem(userId) {
             success: function (data) {
                 messengerContactBox.find(`.messenger-list-item[data-id="${userId}"]`).remove();
                 messengerContactBox.prepend(data.data.contact_item);
+
+                if (activeUsersIds.includes(+userId)) {
+                    userActive(+userId);
+                }
+
                 if (userId === getMessengerId()) updateSelectedContent(userId)
             },
             error: function (xhr, status, error) {
@@ -494,12 +502,66 @@ function playNotificationSound() {
 
 window.Echo.private('message.' + authId)
     .listen("Message", (e) => {
-        console.log(e);
         updateContactItem(e.message.from_id);
         playNotificationSound();
         let message = receiveMessageCard(e.message)
         messageBoxContainer.append(message);
     });
+
+window.Echo.join('online')
+    .here((users) => {
+        console.log(users);
+        setActiveUsersIds(users);
+        $.each(users, function (index, user) {
+            userActive(user.id);
+        });
+    })
+    .joining((user) => {
+        addNewUser(user.id);
+        userActive(user.id);
+    })
+    .leaving((user) => {
+        removeUserId(user.id);
+        userInactive(user.id);
+    });
+
+
+function updateUserActiveList() {
+    $('.messenger-list-item').each(function (index, value) {
+        let id = $(this).data('id');
+        if (activeUsersIds.includes(id)) userActive(id);
+    })
+}
+
+function setActiveUsersIds(users) {
+    $.each(users, function (index, user) {
+        activeUsersIds.push(user.id);
+    });
+}
+
+function userActive(id) {
+    let contactItem = $(`.messenger-list-item[data-id="${id}"]`).find('.img').find('span');
+    contactItem.removeClass('inactive');
+    contactItem.addClass('active');
+}
+
+function userInactive(id) {
+    let contactItem = $(`.messenger-list-item[data-id="${id}"]`).find('.img').find('span');
+    contactItem.removeClass('active');
+    contactItem.addClass('inactive');
+}
+
+function addNewUser(value) {
+    activeUsersIds.push(value);
+}
+
+function removeUserId(id) {
+    let index = activeUsersIds.indexOf(id);
+
+    if (index !== -1) {
+        activeUsersIds.splice(index, 1);
+    }
+}
 
 /**
  * -----------------------------------
